@@ -21,7 +21,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.24.1">
     <meta name="theme" content="Tranquilpeak 0.3.1-BETA">
-    <title>StanとRでベイズ統計モデリングの第4章をPyMC3で実装</title>
+    <title>StanとRでベイズ統計モデリング 5章の重回帰をPyMC3で実装</title>
     <meta name="author" content="n_ken">
     <meta name="keywords" content="">
 
@@ -29,29 +29,17 @@
     
 
     
-    <meta name="description" content="「StanとRでベイズ統計モデリング」を読みました。ベイズ統計モデリングを行うための様々なテクニックがや具体的な事例が紹介されていて、とても勉強になりました。
-
-本書はrstanを使ってモデリングしています。pystanを使った実装例も様々なブログで紹介されているのですが、PyMC3についてはほとんど情報がありませんでした。
-
-そこで、このブログではPyMC3での実装例を紹介していこうと思います。
+    <meta name="description" content="今回は、第5章の重回帰モデルの実装を行います。主にPyMC3での実装部分に焦点を当てて整理していきます。
 ">
-    <meta property="og:description" content="「StanとRでベイズ統計モデリング」を読みました。ベイズ統計モデリングを行うための様々なテクニックがや具体的な事例が紹介されていて、とても勉強になりました。
-
-本書はrstanを使ってモデリングしています。pystanを使った実装例も様々なブログで紹介されているのですが、PyMC3についてはほとんど情報がありませんでした。
-
-そこで、このブログではPyMC3での実装例を紹介していこうと思います。
+    <meta property="og:description" content="今回は、第5章の重回帰モデルの実装を行います。主にPyMC3での実装部分に焦点を当てて整理していきます。
 ">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="StanとRでベイズ統計モデリングの第4章をPyMC3で実装">
-    <meta property="og:url" content="/2017/07/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0%E3%81%AE%E7%AC%AC4%E7%AB%A0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85/">
+    <meta property="og:title" content="StanとRでベイズ統計モデリング 5章の重回帰をPyMC3で実装">
+    <meta property="og:url" content="/2017/07/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0-5%E7%AB%A0%E3%81%AE%E9%87%8D%E5%9B%9E%E5%B8%B0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85/">
     <meta property="og:site_name" content="Garbage in, garbage out">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Garbage in, garbage out">
-    <meta name="twitter:description" content="「StanとRでベイズ統計モデリング」を読みました。ベイズ統計モデリングを行うための様々なテクニックがや具体的な事例が紹介されていて、とても勉強になりました。
-
-本書はrstanを使ってモデリングしています。pystanを使った実装例も様々なブログで紹介されているのですが、PyMC3についてはほとんど情報がありませんでした。
-
-そこで、このブログではPyMC3での実装例を紹介していこうと思います。
+    <meta name="twitter:description" content="今回は、第5章の重回帰モデルの実装を行います。主にPyMC3での実装部分に焦点を当てて整理していきます。
 ">
     
       <meta name="twitter:creator" content="@n_ken">
@@ -224,14 +212,14 @@ ga('send', 'pageview');
             <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      StanとRでベイズ統計モデリングの第4章をPyMC3で実装
+      StanとRでベイズ統計モデリング 5章の重回帰をPyMC3で実装
     </h1>
   
   <div class="postShorten-meta post-meta">
   
-    <time itemprop="datePublished" datetime="2017-07-02T16:43:22&#43;09:00">
+    <time itemprop="datePublished" datetime="2017-07-03T00:00:00Z">
       
-  July 2, 2017
+  July 3, 2017
 
     </time>
   
@@ -251,59 +239,39 @@ ga('send', 'pageview');
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p><a href="http://www.kyoritsu-pub.co.jp/bookdetail/9784320112421">「StanとRでベイズ統計モデリング」</a>を読みました。ベイズ統計モデリングを行うための様々なテクニックがや具体的な事例が紹介されていて、とても勉強になりました。</p>
-
-<p>本書はrstanを使ってモデリングしています。pystanを使った実装例も様々なブログで紹介されているのですが、PyMC3についてはほとんど情報がありませんでした。</p>
-
-<p>そこで、このブログではPyMC3での実装例を紹介していこうと思います。
+              <p>今回は、第5章の重回帰モデルの実装を行います。主にPyMC3での実装部分に焦点を当てて整理していきます。
 </p>
 
-<h2 id="単回帰モデル">単回帰モデル</h2>
+<h1 id="重回帰分析">重回帰分析</h1>
 
-<p>年齢から年収を予測する単回帰モデルを構築します。具体的には以下の通りです。(モデルについては書籍をご参照下さい)</p>
+<h2 id="モデルの定式化">モデルの定式化</h2>
 
 <p>$$
-\begin{aligned}
-y_i &amp;\sim \text{Normal}(a + bx_i, \sigma^2)\cr
-a &amp;\sim \text{Normal}(0, 100^2)\cr
-b &amp;\sim \text{Normal}(0, 100^2)
-\end{aligned}
+Y^{(i)} \sim \text{Normal}(b_0 + b_1X_1^{(i)} + b_2X_2^{(i)}, \sigma^2)
 $$</p>
 
-<h2 id="コースコードの確認">コースコードの確認</h2>
+<p>ここで、\(Y^{(i)}(X^{(i)})\)は、\(i\)番目の観測値を表します。入力変数\(X\)については、書籍をご確認下さい。</p>
 
-<p>問題設定やモデル式などは、書籍を参考にしてください。以下のコードは、PyMC3で実装したサンプルです。</p>
+<h2 id="ソースコードの確認">ソースコードの確認</h2>
 
-<script type="text/javascript" src="https://gist.github.com/4355edb99213dd17a303980bb084dfcc.js"></script>
+<p>以下が、今回のソースコード全体になります。</p>
+
+<script type="text/javascript" src="https://gist.github.com/dea82ca674c4387aa776c61fef120d40.js"></script>
 
 
-<h3 id="モデル定義">モデル定義</h3>
+<h3 id="モデルの定義">モデルの定義</h3>
 
-<p>まずはモデル定義部分を説明します。PyMC3では、モデル定義を<code>with</code>文の中で行います。<code>with pm.Model()</code>はおまじないのようなものだと思っていただいて大丈夫です。</p>
+<h4 id="事前分布の定義">事前分布の定義</h4>
 
-<p>モデリングの手順は、事前分布を定義し、尤度関数を指定し、サンプリング方法を指定します。</p>
+<p>事前分布の定義では、<code>beta</code>を確率変数として取り扱っています。<code>shape</code>引数を使うと、まとめて記述できるためコード量が減ります。<code>shape</code>を使わずに、それぞれの係数を個別にインスタンス化しても問題ありません。</p>
 
-<h4 id="事前分布">事前分布</h4>
+<h4 id="尤度関数の定義">尤度関数の定義</h4>
 
-<p>確率変数がクラスとして定義されているので、そちらを使用して事前分布を定義します(<code>a, b, sigma</code>)。決定論的に決まる変数は、<code>pm.Deterministic</code>を用いてインスタンス化すると、サンプリングの対象となります。</p>
+<p>まず、確定的変数として<code>yest</code>を作成しています。<code>beta</code>をベクトル化しているため、<code>beta.dot(X.T)</code>のように簡潔に記述することが可能になります。</p>
 
-<h4 id="尤度関数">尤度関数</h4>
+<h3 id="結果の可視化">結果の可視化</h3>
 
-<p>確率変数クラスの<code>observed</code>引数にデータを渡すと、その変数は観測値を持つため、尤度関数となります。比較的シンプルに使い分けることができます。</p>
-
-<h4 id="サンプリング方法">サンプリング方法</h4>
-
-<p><code>pm.sample</code>でサンプリング方法を指定します。パラメーターが連続値の場合、デフォルトではNUTSを使用し、離散値の場合はM-H法を使用します。ここでは、3000サンプルを取得しています。色々と指定できるので、詳しい使い方は公式ドキュメントを参考にしてください。</p>
-
-<h3 id="収束診断">収束診断</h3>
-
-<p>収束診断の<code>pm.traceplot</code>は、サンプリング列をグラフで表示してくれます。また、<code>pm.gelman_rubin</code>で\(\hat{R}\)を計算してくれます。グラフで見たい場合は、<code>pm.forestplot</code>で可視化できます。</p>
-
-<h3 id="予測分布の計算">予測分布の計算</h3>
-
-<p>予測分布を得たい場合は、<code>pm.sample_ppc</code>を使用します。データを変更したい場合がほとんどかと思いますので、その場合は<code>theano.shared</code>を使用してモデル定義を行って下さい。今回の場合は、<code>x</code>をそのようにしています。<code>set_value</code>メソッドで値をセットしなおしてから<code>pm.sample_ppc</code>を実行すれば、予期した結果が得られます。</p>
-
-<p>予測分布は以下のようになります。</p>
+<p>残差がモデル通りに分布しているかどうかを確認するコードになります。結果は以下のようになり、正規分布にしたがっているように見えます。</p>
 
 
 
@@ -325,9 +293,9 @@ $$</p>
 
 <div class="figure nocaption fig-100" >
   
-    <a class="fancybox" href="https://n-ken.github.io/img/post/rstanbook/ch04/prediction.png" title="予測分布" data-fancybox-group="">
+    <a class="fancybox" href="https://n-ken.github.io/img/post/rstanbook/ch05/resid_multiple_lm.png" title="残差の中央値の分布" data-fancybox-group="">
   
-    <img class="fig-img" src="https://n-ken.github.io/img/post/rstanbook/ch04/prediction.png"  alt="予測分布">
+    <img class="fig-img" src="https://n-ken.github.io/img/post/rstanbook/ch05/resid_multiple_lm.png"  alt="残差の中央値の分布">
   
     </a>
   
@@ -335,11 +303,43 @@ $$</p>
 </div>
 
 
-<h2 id="まとめ">まとめ</h2>
+<p>また、コード自体は載せていませんが、サンプルしたパラメーターの散布図行列を可視化すると、どのような傾向があるか考察しやすくなります。結果は以下の通りです。</p>
 
-<p>PyMC3で、4章のポイントとなる部分を実装しました。Pythonだけで記述できるところが、PyMC3を使う良いところですね。</p>
 
-<p>どのライブラリや言語を使うかは手段の問題なので、使いやすいものを利用してベイズ推論に慣れていくと良いと思います。使いやすいものを使って、是非本書の内容をマスターしていきたいものです。</p>
+
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+<div class="figure nocaption fig-100" >
+  
+    <a class="fancybox" href="https://n-ken.github.io/img/post/rstanbook/ch05/coef_scmatrix_multiple_lm.png" title="パラメーターの散布図行列" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://n-ken.github.io/img/post/rstanbook/ch05/coef_scmatrix_multiple_lm.png"  alt="パラメーターの散布図行列">
+  
+    </a>
+  
+  
+</div>
+
+
+<p>pandasで散布図行列を描画する方法は、<a href="http://sinhrks.hatenablog.com/entry/2016/11/01/075527">StatsFragmentsさん</a>に素晴らしい実装があります。ここでもこちらを使用させていただいています。</p>
+
+<h1 id="まとめ">まとめ</h1>
+
+<p>今回は重回帰モデルをPyMC3で実装しました。ベクトル化を用いて、簡潔に表記するような方法もご紹介しました。Numpyなどに慣れている場合は、ほとんど抵抗なく使用できるところが個人的にとても良いと思っています。PyMC3を使う人が増えてくれればいいなぁと思います。</p>
               
             </div>
           </div>
@@ -367,7 +367,7 @@ $$</p>
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://n-ken.github.io/2017/07/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0-5%E7%AB%A0%E3%81%AE%E9%87%8D%E5%9B%9E%E5%B8%B0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85/" data-tooltip="StanとRでベイズ統計モデリング 5章の重回帰をPyMC3で実装">
+            <a class="post-action-btn btn btn--disabled">
           
             <i class="fa fa-angle-left"></i>
             <span class="hide-xs hide-sm text-small icon-ml">次</span>
@@ -375,7 +375,7 @@ $$</p>
         </li>
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--disabled">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://n-ken.github.io/2017/07/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0%E3%81%AE%E7%AC%AC4%E7%AB%A0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85/" data-tooltip="StanとRでベイズ統計モデリングの第4章をPyMC3で実装">
           
             <span class="hide-xs hide-sm text-small icon-mr">前</span>
             <i class="fa fa-angle-right"></i>
@@ -392,17 +392,17 @@ $$</p>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%25AE%25E7%25AC%25AC4%25E7%25AB%25A0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0-5%25E7%25AB%25A0%25E3%2581%25AE%25E9%2587%258D%25E5%259B%259E%25E5%25B8%25B0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
           <i class="fa fa-google-plus"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%25AE%25E7%25AC%25AC4%25E7%25AB%25A0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0-5%25E7%25AB%25A0%25E3%2581%25AE%25E9%2587%258D%25E5%259B%259E%25E5%25B8%25B0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
           <i class="fa fa-facebook-official"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%25AE%25E7%25AC%25AC4%25E7%25AB%25A0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0-5%25E7%25AB%25A0%25E3%2581%25AE%25E9%2587%258D%25E5%259B%259E%25E5%25B8%25B0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
           <i class="fa fa-twitter"></i>
         </a>
       </li>
@@ -451,7 +451,7 @@ $$</p>
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://n-ken.github.io/2017/07/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0-5%E7%AB%A0%E3%81%AE%E9%87%8D%E5%9B%9E%E5%B8%B0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85/" data-tooltip="StanとRでベイズ統計モデリング 5章の重回帰をPyMC3で実装">
+            <a class="post-action-btn btn btn--disabled">
           
             <i class="fa fa-angle-left"></i>
             <span class="hide-xs hide-sm text-small icon-ml">次</span>
@@ -459,7 +459,7 @@ $$</p>
         </li>
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--disabled">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://n-ken.github.io/2017/07/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0%E3%81%AE%E7%AC%AC4%E7%AB%A0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85/" data-tooltip="StanとRでベイズ統計モデリングの第4章をPyMC3で実装">
           
             <span class="hide-xs hide-sm text-small icon-mr">前</span>
             <i class="fa fa-angle-right"></i>
@@ -476,17 +476,17 @@ $$</p>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%25AE%25E7%25AC%25AC4%25E7%25AB%25A0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0-5%25E7%25AB%25A0%25E3%2581%25AE%25E9%2587%258D%25E5%259B%259E%25E5%25B8%25B0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
           <i class="fa fa-google-plus"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%25AE%25E7%25AC%25AC4%25E7%25AB%25A0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0-5%25E7%25AB%25A0%25E3%2581%25AE%25E9%2587%258D%25E5%259B%259E%25E5%25B8%25B0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
           <i class="fa fa-facebook-official"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%25AE%25E7%25AC%25AC4%25E7%25AB%25A0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0-5%25E7%25AB%25A0%25E3%2581%25AE%25E9%2587%258D%25E5%259B%259E%25E5%25B8%25B0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
           <i class="fa fa-twitter"></i>
         </a>
       </li>
@@ -513,17 +513,17 @@ $$</p>
       <div id="share-options-bar" class="share-options-bar" data-behavior="4">
   <ul class="share-options">
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%25AE%25E7%25AC%25AC4%25E7%25AB%25A0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
+      <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0-5%25E7%25AB%25A0%25E3%2581%25AE%25E9%2587%258D%25E5%259B%259E%25E5%25B8%25B0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
         <i class="fa fa-google-plus"></i><span>Google Plusで共有</span>
       </a>
     </li>
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%25AE%25E7%25AC%25AC4%25E7%25AB%25A0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
+      <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0-5%25E7%25AB%25A0%25E3%2581%25AE%25E9%2587%258D%25E5%259B%259E%25E5%25B8%25B0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
         <i class="fa fa-facebook-official"></i><span>Facebookで共有</span>
       </a>
     </li>
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0%25E3%2581%25AE%25E7%25AC%25AC4%25E7%25AB%25A0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
+      <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fn-ken.github.io%2f2017%2f07%2fstan%25E3%2581%25A8r%25E3%2581%25A7%25E3%2583%2599%25E3%2582%25A4%25E3%2582%25BA%25E7%25B5%25B1%25E8%25A8%2588%25E3%2583%25A2%25E3%2583%2587%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0-5%25E7%25AB%25A0%25E3%2581%25AE%25E9%2587%258D%25E5%259B%259E%25E5%25B8%25B0%25E3%2582%2592pymc3%25E3%2581%25A7%25E5%25AE%259F%25E8%25A3%2585%2f">
         <i class="fa fa-twitter"></i><span>Twitterで共有</span>
       </a>
     </li>
@@ -680,9 +680,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = 'https:\/\/n-ken.github.io\/2017\/07\/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0%E3%81%AE%E7%AC%AC4%E7%AB%A0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85\/';
+          this.page.url = 'https:\/\/n-ken.github.io\/2017\/07\/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0-5%E7%AB%A0%E3%81%AE%E9%87%8D%E5%9B%9E%E5%B8%B0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85\/';
           
-            this.page.identifier = '\/2017\/07\/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0%E3%81%AE%E7%AC%AC4%E7%AB%A0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85\/'
+            this.page.identifier = '\/2017\/07\/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0-5%E7%AB%A0%E3%81%AE%E9%87%8D%E5%9B%9E%E5%B8%B0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85\/'
           
         };
         (function() {
