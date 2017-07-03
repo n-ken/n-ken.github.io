@@ -66,6 +66,16 @@
 
     
       
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-45792409-3', 'auto');
+ga('send', 'pageview');
+</script>
+
     
     
   </head>
@@ -107,11 +117,21 @@
       
   <li class="sidebar-button">
     
+      <a class="sidebar-button-link " href="https://n-ken.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">Home</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
       <a class="sidebar-button-link " href="https://n-ken.github.io/categories">
     
       <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
       
-      <span class="sidebar-button-desc">カテゴリー</span>
+      <span class="sidebar-button-desc">Categories</span>
     </a>
   </li>
 
@@ -121,7 +141,7 @@
     
       <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
       
-      <span class="sidebar-button-desc">タグ</span>
+      <span class="sidebar-button-desc">Tags</span>
     </a>
   </li>
 
@@ -131,17 +151,7 @@
     
       <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
       
-      <span class="sidebar-button-desc">アーカイブ</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://n-ken.github.io/">
-    
-      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-      
-      <span class="sidebar-button-desc">ホーム</span>
+      <span class="sidebar-button-desc">Archives</span>
     </a>
   </li>
 
@@ -201,7 +211,7 @@
       <h4 class="archive-title" style="text-decoration: none;">2017</h4>
       
         <ul class="archive-posts archive-month" data-date="201707">
-          <h5 class="archive-title" style="text-decoration: none;">七月</h5>
+          <h5 class="archive-title" style="text-decoration: none;">July</h5>
           
             <li class="archive-post archive-day" data-date="20170702">
               <a class="archive-post-title" href="https://n-ken.github.io/2017/07/stan%E3%81%A8r%E3%81%A7%E3%83%99%E3%82%A4%E3%82%BA%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0%E3%81%AE%E7%AC%AC4%E7%AB%A0%E3%82%92pymc3%E3%81%A7%E5%AE%9F%E8%A3%85/">StanとRでベイズ統計モデリングの第4章をPyMC3で実装</a>
@@ -271,22 +281,12 @@
                   Jul 7, 2017
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather">「StanとRでベイズ統計モデリング」を読みました。ベイズ統計モデリングを行うための様々なテクニックがや具体的な事例が紹介されていて、とても勉強になりました。
-本書はrstanを使ってモデリングしています。pystanを使った実装例も様々なブログで紹介されているのですが、PyMC3についてはほとんど情報がありませんでした。
-そこで、このブログではPyMC3での実装例を紹介していこうと思います。
-単回帰モデル 年齢から年収を予測する単回帰モデルを構築します。具体的には以下の通りです。(モデルについては書籍をご参照下さい)
-$$ \begin{aligned} y_i &amp;\sim \text{Normal}(a + bx_i, \sigma^2)\cr a &amp;\sim \text{Normal}(0, 100^2)\cr b &amp;\sim \text{Normal}(0, 100^2) \end{aligned} $$
-コースコードの確認 問題設定やモデル式などは、書籍を参考にしてください。以下のコードは、PyMC3で実装したサンプルです。
- モデル定義 まずはモデル定義部分を説明します。PyMC3では、モデル定義をwith文の中で行います。with pm.Model()はおまじないのようなものだと思っていただいて大丈夫です。
-モデリングの手順は、事前分布を定義し、尤度関数を指定し、サンプリング方法を指定します。
-事前分布 確率変数がクラスとして定義されているので、そちらを使用して事前分布を定義します(a, b, sigma)。決定論的に決まる変数は、pm.Deterministicを用いてインスタンス化すると、サンプリングの対象となります。
-尤度関数 確率変数クラスのobserved引数にデータを渡すと、その変数は観測値を持つため、尤度関数となります。比較的シンプルに使い分けることができます。
-サンプリング方法 pm.sampleでサンプリング方法を指定します。パラメーターが連続値の場合、デフォルトではNUTSを使用し、離散値の場合はM-H法を使用します。ここでは、3000サンプルを取得しています。色々と指定できるので、詳しい使い方は公式ドキュメントを参考にしてください。
-収束診断 収束診断のpm.traceplotは、サンプリング列をグラフで表示してくれます。また、pm.gelman_rubinで\(\hat{R}\)を計算してくれます。グラフで見たい場合は、pm.forestplotで可視化できます。
-予測分布の計算 予測分布を得たい場合は、pm.sample_ppcを使用します。データを変更したい場合がほとんどかと思いますので、その場合はtheano.sharedを使用してモデル定義を行って下さい。今回の場合は、xをそのようにしています。set_valueメソッドで値をセットしなおしてからpm.sample_ppcを実行すれば、予期した結果が得られます。
-予測分布は以下のようになります。
-  まとめ PyMC3で、4章のポイントとなる部分を実装しました。Pythonだけで記述できるところが、PyMC3を使う良いところですね。
-どのライブラリや言語を使うかは手段の問題なので、使いやすいものを利用してベイズ推論に慣れていくと良いと思います。使いやすいものを使って、是非本書の内容をマスターしていきたいものです。</div>
+              <div class="media-content hide-xs font-merryweather"><p><a href="http://www.kyoritsu-pub.co.jp/bookdetail/9784320112421">「StanとRでベイズ統計モデリング」</a>を読みました。ベイズ統計モデリングを行うための様々なテクニックがや具体的な事例が紹介されていて、とても勉強になりました。</p>
+
+<p>本書はrstanを使ってモデリングしています。pystanを使った実装例も様々なブログで紹介されているのですが、PyMC3についてはほとんど情報がありませんでした。</p>
+
+<p>そこで、このブログではPyMC3での実装例を紹介していこうと思います。
+</p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
